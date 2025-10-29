@@ -7,11 +7,10 @@ import ProjectsSection from "./ProjectsSection"
 const Layout = () => {
   return (
     <>
-       <NavbarSection />
+    
        <HeroSection/>
-        <AboutSection/>
-        <ProjectsSection/>
-       <FooterSection/>
+      <AboutSection/>
+       
     </>
   )
 }
