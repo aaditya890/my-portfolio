@@ -66,7 +66,7 @@ export default function AboutSection() {
       {/* Sticky stage */}
       <div className="sticky top-0 h-screen overflow-visible">
         {/* Top soft blend so it doesn’t look like a hard seam with previous section */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-white/10 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-20  from-white/10 to-transparent" />
         {/* Ambient glows */}
         <div className="pointer-events-none absolute left-10 top-24 h-80 w-80 rounded-full bg-blue-900/10 blur-3xl" />
         <div className="pointer-events-none absolute right-10 bottom-24 h-80 w-80 rounded-full bg-red-900/10 blur-3xl" />
@@ -98,7 +98,7 @@ export default function AboutSection() {
 
           {/* Image / visual */}
           <div className="relative flex items-center justify-center">
-            <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-red-500/20 via-transparent to-transparent blur-2xl" />
+            <div className="absolute inset-0 rounded-3xl  from-red-500/20 via-transparent to-transparent blur-2xl" />
             <div className="relative aspect-[4/5] w-full max-w-sm overflow-hidden rounded-3xl shadow-2xl md:max-w-md">
               <img
                 src="/professional-portrait-dark-theme.jpg"
