@@ -1,15 +1,16 @@
 "use client"
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import Matter from "matter-js"
 
 interface Tag {
   id: string
   label: string
-  emoji: string
+  imagePath: string
   color: string
   body: Matter.Body
   width: number
   height: number
+  image: HTMLImageElement | null
 }
 
 export default function PhysicsTags() {
@@ -19,24 +20,47 @@ export default function PhysicsTags() {
   const dragConstraintRef = useRef<Matter.Constraint | null>(null)
   const isDraggingRef = useRef(false)
   const isMobileRef = useRef(false)
+  const [imagesLoaded, setImagesLoaded] = useState(false)
 
-  // Tags with emoji icons (no image loading issues)
   const allTags = [
-    { label: "SaaS Webs", emoji: "🌐", color: "#F59E0B" },
-    { label: "Web Design", emoji: "🎨", color: "#C084FC" },
-    { label: "Angular", emoji: "🅰️", color: "#DD0031" },
-    { label: "Tailwind", emoji: "🌊", color: "#06B6D4" },
-    { label: "Database", emoji: "🗄️", color: "#22C55E" },
-    { label: "Github", emoji: "🐙", color: "#171515" },
-    { label: "TypeScript", emoji: "📘", color: "#3178C6" },
-    { label: "JavaScript", emoji: "⚡", color: "#F7DF1E" },
-    { label: "UI/UX", emoji: "✨", color: "#3B82F6" },
-    { label: "E-commerce", emoji: "🛍️", color: "#10B981" },
+    { label: "SaaS Webs", imagePath: "src/assets/tagsLogo/saas.png", color: "#F59E0B" },
+    { label: "Web Design", imagePath: "src/assets/tagsLogo/web-design.png", color: "#C084FC" },
+    { label: "Angular", imagePath: "src/assets/tagsLogo/angular.png", color: "#DD0031" },
+    { label: "Tailwind", imagePath: "src/assets/tagsLogo/talwind.png", color: "#06B6D4" },
+    { label: "Database", imagePath: "src/assets/tagsLogo/database.png", color: "#22C55E" },
+    { label: "Github", imagePath: "src/assets/tagsLogo/github.png", color: "#171515" },
+    { label: "TypeScript", imagePath: "src/assets/tagsLogo/typescript.png", color: "#3178C6" },
+    { label: "JavaScript", imagePath: "src/assets/tagsLogo/javascript.png", color: "#F7DF1E" },
+    { label: "UI/UX", imagePath: "src/assets/tagsLogo/ui-ux.png", color: "#3B82F6" },
+    { label: "E-commerce", imagePath: "src/assets/tagsLogo/e-com.png", color: "#10B981" },
   ]
 
   useEffect(() => {
+    let loadedCount = 0
+    const totalImages = allTags.length
+
+    allTags.forEach((tag) => {
+      const img = new Image()
+      img.crossOrigin = "anonymous"
+      img.onload = () => {
+        loadedCount++
+        if (loadedCount === totalImages) {
+          setImagesLoaded(true)
+        }
+      }
+      img.onerror = () => {
+        loadedCount++
+        if (loadedCount === totalImages) {
+          setImagesLoaded(true)
+        }
+      }
+      img.src = tag.imagePath
+    })
+  }, [])
+
+  useEffect(() => {
     const canvas = canvasRef.current
-    if (!canvas) return
+    if (!canvas || !imagesLoaded) return
 
     isMobileRef.current = window.innerWidth < 768
 
@@ -76,14 +100,20 @@ export default function PhysicsTags() {
         frictionAir: 0.05,
       })
       World.add(engine.world, body)
+
+      const img = new Image()
+      img.crossOrigin = "anonymous"
+      img.src = tag.imagePath
+
       return {
         id: `tag-${i}`,
         label: tag.label,
-        emoji: tag.emoji,
+        imagePath: tag.imagePath,
         color: tag.color,
         body,
         width: tagWidth,
         height: tagHeight,
+        image: img,
       }
     })
 
@@ -141,7 +171,6 @@ export default function PhysicsTags() {
       }
     }
 
-    // Mouse events
     canvas.addEventListener("mousedown", handleDragStart as EventListener)
     document.addEventListener("mousemove", handleDragMove as EventListener)
     document.addEventListener("mouseup", handleDragEnd)
@@ -180,21 +209,20 @@ export default function PhysicsTags() {
         ctx.roundRect(-tag.width / 2, -tag.height / 2, tag.width, tag.height / 2.5, 8)
         ctx.fill()
 
-        ctx.font = "24px Arial"
-        ctx.textAlign = "center"
-        ctx.textBaseline = "middle"
-        ctx.fillText(tag.emoji, -tag.width / 2 + 20, -2)
+        if (tag.image && tag.image.complete && tag.image.naturalHeight !== 0) {
+          ctx.drawImage(tag.image, -tag.width / 2 + 8, -12, 24, 24)
+        }
 
         // Text shadow
         ctx.fillStyle = "rgba(0,0,0,0.2)"
-        ctx.font = "700 14px 'Alan Sans', sans-serif"
+        ctx.font = "600 14px 'Alan Sans', sans-serif"
         ctx.textAlign = "left"
         ctx.textBaseline = "middle"
         ctx.fillText(tag.label, -tag.width / 2 + 42, 1)
 
         // Text
         ctx.fillStyle = "#FFFFFF"
-        ctx.font = "700 14px 'Alan Sans', sans-serif"
+        ctx.font = "600 14px 'Alan Sans', sans-serif"
         ctx.textAlign = "left"
         ctx.textBaseline = "middle"
         ctx.fillText(tag.label, -tag.width / 2 + 42, 0)
@@ -215,12 +243,12 @@ export default function PhysicsTags() {
       document.removeEventListener("touchmove", handleDragMove as EventListener)
       document.removeEventListener("touchend", handleDragEnd)
     }
-  }, [])
+  }, [imagesLoaded])
 
   return (
     <canvas
       ref={canvasRef}
-      className="w-full h-96 md:h-screen bg-transparent cursor-grab active:cursor-grabbing touch-none"
+      className="w-full h-screen bg-transparent cursor-grab active:cursor-grabbing touch-none block"
     />
   )
 }
