@@ -5,7 +5,7 @@ import Matter from "matter-js"
 interface Tag {
   id: string
   label: string
-  imageUrl: string
+  emoji: string
   color: string
   body: Matter.Body
   width: number
@@ -17,26 +17,28 @@ export default function PhysicsTags() {
   const engineRef = useRef<Matter.Engine | null>(null)
   const tagsRef = useRef<Tag[]>([])
   const dragConstraintRef = useRef<Matter.Constraint | null>(null)
-  const imageCache = useRef<Record<string, HTMLImageElement>>({})
   const isDraggingRef = useRef(false)
+  const isMobileRef = useRef(false)
 
-  // 🎨 Perfect brand-matching colors
+  // Tags with emoji icons (no image loading issues)
   const allTags = [
-    { label: "SaaS Webs", color: "#F59E0B", imageUrl: "src/assets/tagsLogo/saas.png" },
-    { label: "Web Design", color: "#C084FC", imageUrl: "src/assets/tagsLogo/ui-ux.png" },
-    { label: "Angular", color: "#DD0031", imageUrl: "src/assets/tagsLogo/angular.png" },
-    { label: "Tailwind", color: "#06B6D4", imageUrl: "src/assets/tagsLogo/talwind.png" },
-    { label: "Database", color: "#22C55E", imageUrl: "src/assets/tagsLogo/database.png" },
-    { label: "Github", color: "#171515", imageUrl: "src/assets/tagsLogo/github.png" },
-    { label: "TypeScript", color: "#3178C6", imageUrl: "src/assets/tagsLogo/typescript.png" },
-    { label: "JavaScript", color: "#F7DF1E", imageUrl: "src/assets/tagsLogo/javascript.png" },
-    { label: "UI/UX", color: "#3B82F6", imageUrl: "src/assets/tagsLogo/web-design.png" },
-    { label: "E-commerce", color: "#10B981", imageUrl: "src/assets/tagsLogo/e-com.png" },
+    { label: "SaaS Webs", emoji: "🌐", color: "#F59E0B" },
+    { label: "Web Design", emoji: "🎨", color: "#C084FC" },
+    { label: "Angular", emoji: "🅰️", color: "#DD0031" },
+    { label: "Tailwind", emoji: "🌊", color: "#06B6D4" },
+    { label: "Database", emoji: "🗄️", color: "#22C55E" },
+    { label: "Github", emoji: "🐙", color: "#171515" },
+    { label: "TypeScript", emoji: "📘", color: "#3178C6" },
+    { label: "JavaScript", emoji: "⚡", color: "#F7DF1E" },
+    { label: "UI/UX", emoji: "✨", color: "#3B82F6" },
+    { label: "E-commerce", emoji: "🛍️", color: "#10B981" },
   ]
 
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
+
+    isMobileRef.current = window.innerWidth < 768
 
     const width = canvas.clientWidth
     const height = canvas.clientHeight
@@ -51,7 +53,8 @@ export default function PhysicsTags() {
     const { Engine, World, Bodies, Constraint } = Matter
     const engine = Engine.create()
     engineRef.current = engine
-    engine.gravity.y = 0.45
+
+    engine.gravity.y = isMobileRef.current ? 0.3 : 0.45
 
     const wallThickness = 20
     const walls = [
@@ -61,18 +64,6 @@ export default function PhysicsTags() {
       Bodies.rectangle(width + wallThickness / 2, height / 2, wallThickness, height, { isStatic: true }),
     ]
     World.add(engine.world, walls)
-
-    allTags.forEach((tag) => {
-      const img = new Image()
-      img.crossOrigin = "anonymous"
-      img.onload = () => {
-        imageCache.current[tag.label] = img
-      }
-      img.onerror = () => {
-        console.warn(`Failed to load image for ${tag.label}`)
-      }
-      img.src = tag.imageUrl
-    })
 
     tagsRef.current = allTags.map((tag, i) => {
       const x = Math.random() * (width - 100) + 50
@@ -88,7 +79,7 @@ export default function PhysicsTags() {
       return {
         id: `tag-${i}`,
         label: tag.label,
-        imageUrl: tag.imageUrl,
+        emoji: tag.emoji,
         color: tag.color,
         body,
         width: tagWidth,
@@ -136,6 +127,7 @@ export default function PhysicsTags() {
       if (!dragConstraintRef.current) return
       const { x: mouseX, y: mouseY } = getCoordinates(e)
       dragConstraintRef.current.pointB = { x: mouseX, y: mouseY }
+
       if (e instanceof TouchEvent && isDraggingRef.current) {
         e.preventDefault()
       }
@@ -154,9 +146,9 @@ export default function PhysicsTags() {
     document.addEventListener("mousemove", handleDragMove as EventListener)
     document.addEventListener("mouseup", handleDragEnd)
 
-    canvas.addEventListener("touchstart", handleDragStart as EventListener)
-    document.addEventListener("touchmove", handleDragMove as EventListener)
-    document.addEventListener("touchend", handleDragEnd)
+    canvas.addEventListener("touchstart", handleDragStart as EventListener, { passive: true })
+    document.addEventListener("touchmove", handleDragMove as EventListener, { passive: false })
+    document.addEventListener("touchend", handleDragEnd, { passive: true })
 
     const render = () => {
       Engine.update(engine)
@@ -188,17 +180,19 @@ export default function PhysicsTags() {
         ctx.roundRect(-tag.width / 2, -tag.height / 2, tag.width, tag.height / 2.5, 8)
         ctx.fill()
 
-        const img = imageCache.current[tag.label]
-        if (img && img.complete) {
-          ctx.drawImage(img, -tag.width / 2 + 6, -16, 32, 32)
-        }
+        ctx.font = "24px Arial"
+        ctx.textAlign = "center"
+        ctx.textBaseline = "middle"
+        ctx.fillText(tag.emoji, -tag.width / 2 + 20, -2)
 
+        // Text shadow
         ctx.fillStyle = "rgba(0,0,0,0.2)"
         ctx.font = "700 14px 'Alan Sans', sans-serif"
         ctx.textAlign = "left"
         ctx.textBaseline = "middle"
         ctx.fillText(tag.label, -tag.width / 2 + 42, 1)
 
+        // Text
         ctx.fillStyle = "#FFFFFF"
         ctx.font = "700 14px 'Alan Sans', sans-serif"
         ctx.textAlign = "left"
@@ -224,6 +218,9 @@ export default function PhysicsTags() {
   }, [])
 
   return (
-    <canvas ref={canvasRef} className="w-full h-full bg-transparent cursor-grab active:cursor-grabbing touch-none" />
+    <canvas
+      ref={canvasRef}
+      className="w-full h-96 md:h-screen bg-transparent cursor-grab active:cursor-grabbing touch-none"
+    />
   )
 }
