@@ -70,7 +70,7 @@ export default function HomePage() {
       </motion.nav>
 
       {/* ---------------- HERO SECTION ---------------- */}
-      <section className="relative flex flex-col justify-center items-center min-h-screen w-full overflow-hidden pt-28 pb-10">
+      <section className="relative flex flex-col justify-center items-center min-h-screen w-full overflow-hidden pt-10 md:pt-20 pb-10">
         {/* Background Grid */}
         <div
           className="absolute inset-0 opacity-[0.25] pointer-events-none"
@@ -90,7 +90,7 @@ export default function HomePage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="text-sm sm:text-[15px] text-gray-700  font-medium tracking-[0.08em]"
+              className="text-sm sm:text-[15px] text-gray-700 mb-4 under  font-medium tracking-[0.08em]"
             >
               Software Developer & Designer
             </motion.p>
@@ -161,7 +161,7 @@ export default function HomePage() {
 
         {/* ---- Mobile version for image + work side by side ---- */}
         <div className="relative z-10 w-full px-6 mt-8 flex justify-between items-center sm:hidden">
-          <div className="relative w-30 h-30 rounded-md overflow-hidden border border-gray-300 bg-gray-100 shadow-md">
+          <div className="relative w-40 h-40 rounded-md overflow-hidden border border-gray-300 bg-gray-100 shadow-md">
             {profileImages.map((src, index) => (
               <motion.img
                 key={index}
@@ -179,10 +179,10 @@ export default function HomePage() {
           </div>
 
           <div className="text-right">
-            <p className="text-[11px] tracking-[0.25em] text-[#6c6c6c] uppercase">
+            <p className="text-[14px] tracking-[0.25em] text-[#6c6c6c] uppercase">
               Available for <br /> Work
             </p>
-            <h2 className="mt-1 text-[34px] font-extrabold text-[#1a1a1a]">
+            <h2 className="mt-1 text-[40px] font-extrabold text-[#1a1a1a]">
               JUN'25
             </h2>
           </div>
