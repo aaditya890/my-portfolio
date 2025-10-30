@@ -114,46 +114,46 @@ export default function HomePage() {
               polished, intuitive, and thoughtful digital experiences that leave a mark.
             </motion.p>
 
-           {/* ---- CTA Buttons: Contact + GitHub ---- */}
-<div className="mt-10 flex items-center gap-4">
-  {/* Contact Button */}
-  <motion.a
-    href="#contact"
-    whileHover={{ y: -3 }}
-    whileTap={{ scale: 0.97 }}
-    initial={{ opacity: 0, y: 25 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.9, delay: 0.3 }}
-    className="inline-flex items-center gap-2 bg-[#111] text-white px-8 py-3.5 rounded-full font-semibold shadow-sm hover:bg-black transition text-sm"
-  >
-    <img
-      src="https://cdn-icons-png.flaticon.com/512/892/892692.png"
-      alt="arrow"
-      className="w-4 h-4 invert brightness-0"
-    />
-    <span>CONTACT</span>
-  </motion.a>
+            {/* ---- CTA Buttons: Contact + GitHub with GIF Icons ---- */}
+            <div className="mt-10 flex items-center gap-4">
+              {/* Contact Button */}
+              <motion.a
+                href="#contact"
+                whileHover={{ y: -3 }}
+                whileTap={{ scale: 0.97 }}
+                initial={{ opacity: 0, y: 25 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.9, delay: 0.3 }}
+                className="inline-flex items-center gap-1 border border-[#111] text-[#111] px-6 py-2 rounded-full font-semibold hover:bg-[#111] hover:text-white transition text-sm"              >
+                <img
+                  src="src/assets/contact-5.gif"
+                  alt="Contact Icon"
+                  className="w-9 h-9 rounded-full object-contain"
+                />
+                <span>CONTACT</span>
+              </motion.a>
 
-  {/* GitHub Button */}
-  <motion.a
-    href="https://github.com/yourusername"
-    target="_blank"
-    rel="noopener noreferrer"
-    whileHover={{ y: -3 }}
-    whileTap={{ scale: 0.97 }}
-    initial={{ opacity: 0, y: 25 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.9, delay: 0.4 }}
-    className="inline-flex items-center gap-2 border border-[#111] text-[#111] px-7 py-3.5 rounded-full font-semibold hover:bg-[#111] hover:text-white transition text-sm"
-  >
-    <img
-      src="https://cdn-icons-png.flaticon.com/512/25/25231.png"
-      alt="GitHub"
-      className="w-4 h-4"
-    />
-    <span>GITHUB</span>
-  </motion.a>
-</div>
+              {/* GitHub Button */}
+              <motion.a
+                href="https://github.com/yourusername"
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ y: -3 }}
+                whileTap={{ scale: 0.97 }}
+                initial={{ opacity: 0, y: 25 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.9, delay: 0.4 }}
+                className="inline-flex items-center gap-1 border border-[#111] hover:text-[#111] hover:bg-transparent px-6 py-2 rounded-full font-semibold bg-[#111] text-white transition text-sm"
+              >
+                <img
+                  src="src/assets/github.gif"
+                  alt="GitHub Icon"
+                  className="w-8 h-8 rounded-full object-contain"
+                />
+                <span>GITHUB</span>
+              </motion.a>
+            </div>
+
 
           </div>
 
