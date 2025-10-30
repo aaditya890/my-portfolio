@@ -18,6 +18,7 @@ export default function PhysicsTags() {
   const tagsRef = useRef<Tag[]>([])
   const dragConstraintRef = useRef<Matter.Constraint | null>(null)
   const imageCache = useRef<Record<string, HTMLImageElement>>({})
+  const isDraggingRef = useRef(false)
 
   // 🎨 Perfect brand-matching colors
   const allTags = [
@@ -38,7 +39,7 @@ export default function PhysicsTags() {
     if (!canvas) return
 
     const width = canvas.clientWidth
-    const height = window.innerHeight
+    const height = canvas.clientHeight
     const dpr = window.devicePixelRatio || 1
     canvas.width = width * dpr
     canvas.height = height * dpr
@@ -95,15 +96,30 @@ export default function PhysicsTags() {
       }
     })
 
-    const handleMouseDown = (e: MouseEvent) => {
+    const getCoordinates = (e: MouseEvent | TouchEvent) => {
       const rect = canvas.getBoundingClientRect()
-      const mouseX = e.clientX - rect.left
-      const mouseY = e.clientY - rect.top
+      if (e instanceof TouchEvent) {
+        const touch = e.touches[0]
+        return {
+          x: touch.clientX - rect.left,
+          y: touch.clientY - rect.top,
+        }
+      } else {
+        return {
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top,
+        }
+      }
+    }
+
+    const handleDragStart = (e: MouseEvent | TouchEvent) => {
+      const { x: mouseX, y: mouseY } = getCoordinates(e)
       for (const tag of tagsRef.current) {
         const dx = tag.body.position.x - mouseX
         const dy = tag.body.position.y - mouseY
         const dist = Math.sqrt(dx * dx + dy * dy)
         if (dist < Math.max(tag.width, tag.height) / 2 + 10) {
+          isDraggingRef.current = true
           dragConstraintRef.current = Constraint.create({
             bodyA: tag.body,
             pointB: { x: mouseX, y: mouseY },
@@ -116,22 +132,31 @@ export default function PhysicsTags() {
       }
     }
 
-    const handleMouseMove = (e: MouseEvent) => {
+    const handleDragMove = (e: MouseEvent | TouchEvent) => {
       if (!dragConstraintRef.current) return
-      const rect = canvas.getBoundingClientRect()
-      dragConstraintRef.current.pointB = { x: e.clientX - rect.left, y: e.clientY - rect.top }
+      const { x: mouseX, y: mouseY } = getCoordinates(e)
+      dragConstraintRef.current.pointB = { x: mouseX, y: mouseY }
+      if (e instanceof TouchEvent && isDraggingRef.current) {
+        e.preventDefault()
+      }
     }
 
-    const handleMouseUp = () => {
+    const handleDragEnd = () => {
+      isDraggingRef.current = false
       if (dragConstraintRef.current) {
         World.remove(engine.world, dragConstraintRef.current)
         dragConstraintRef.current = null
       }
     }
 
-    canvas.addEventListener("mousedown", handleMouseDown)
-    document.addEventListener("mousemove", handleMouseMove)
-    document.addEventListener("mouseup", handleMouseUp)
+    // Mouse events
+    canvas.addEventListener("mousedown", handleDragStart as EventListener)
+    document.addEventListener("mousemove", handleDragMove as EventListener)
+    document.addEventListener("mouseup", handleDragEnd)
+
+    canvas.addEventListener("touchstart", handleDragStart as EventListener)
+    document.addEventListener("touchmove", handleDragMove as EventListener)
+    document.addEventListener("touchend", handleDragEnd)
 
     const render = () => {
       Engine.update(engine)
@@ -189,16 +214,16 @@ export default function PhysicsTags() {
     render()
 
     return () => {
-      canvas.removeEventListener("mousedown", handleMouseDown)
-      document.removeEventListener("mousemove", handleMouseMove)
-      document.removeEventListener("mouseup", handleMouseUp)
+      canvas.removeEventListener("mousedown", handleDragStart as EventListener)
+      document.removeEventListener("mousemove", handleDragMove as EventListener)
+      document.removeEventListener("mouseup", handleDragEnd)
+      canvas.removeEventListener("touchstart", handleDragStart as EventListener)
+      document.removeEventListener("touchmove", handleDragMove as EventListener)
+      document.removeEventListener("touchend", handleDragEnd)
     }
   }, [])
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="w-full h-full bg-transparent cursor-grab active:cursor-grabbing absolute top-0 left-0 z-0"
-    />
+    <canvas ref={canvasRef} className="w-full h-full bg-transparent cursor-grab active:cursor-grabbing touch-none" />
   )
 }
