@@ -4,10 +4,7 @@ import HeroSection from "./HeroSection"
 const Layout = () => {
   return (
     <>
-    
-       <HeroSection/>
-      
-       
+       <HeroSection/> 
     </>
   )
 }
