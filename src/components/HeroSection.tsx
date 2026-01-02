@@ -4,8 +4,6 @@ import { useEffect, useState } from "react"
 import { Navbar } from "./NavbarSection"
 import FooterSection from "./footer"
 
-
-
 export default function HomePage() {
   const profileImages = [
     "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&q=80&w=1000",
@@ -175,8 +173,6 @@ export default function HomePage() {
           </section>
 
         </div>
-
-    
       <FooterSection />
     </>
   )
