@@ -1,10 +1,9 @@
 "use client"
 import { motion } from "framer-motion"
 import { useEffect, useState } from "react"
-import { AboutSection } from "./AboutSection"
 import { Navbar } from "./NavbarSection"
 import FooterSection from "./footer"
-import ScrollCardsSection from "./ScrollCardsSection"
+
 
 
 export default function HomePage() {
@@ -176,7 +175,7 @@ export default function HomePage() {
           </section>
 
         </div>
-      <AboutSection />
+
     
       <FooterSection />
     </>
